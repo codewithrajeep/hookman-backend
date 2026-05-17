@@ -1,0 +1,22 @@
+name: Auto PR to main
+
+on:
+  push:
+    branches: [development]
+
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: repo-sync/pull-request@v2
+        with:
+          source_branch: development
+          destination_branch: main
+          pr_title: "chore: sync development → main"
+          pr_body: "Automated PR — CI must pass before merge"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
