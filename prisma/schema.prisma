@@ -1,0 +1,98 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  name      String
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  apiKeys   ApiKey[]
+  endpoints Endpoint[]
+
+  @@map("users")
+}
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  key        String    @unique
+  prefix     String    @unique
+  name       String
+  userId     String    @map("user_id")
+  user       User      @relation(fields: [userId], references: [id])
+  createdAt  DateTime  @default(now()) @map("created_at")
+  lastUsedAt DateTime? @map("last_used_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  @@map("api_keys")
+}
+
+model Endpoint {
+  id               String            @id @default(cuid())
+  name             String
+  url              String
+  secret           String
+  isActive         Boolean           @default(true) @map("is_active")
+  userId           String            @map("user_id")
+  user             User              @relation(fields: [userId], references: [id])
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  events           Event[]
+  deadLetterEvents DeadLetterEvent[]
+
+  @@map("endpoints")
+}
+
+enum EventStatus {
+  PENDING
+  DELIVERING
+  DELIVERED
+  FAILED
+}
+
+model Event {
+  id               String            @id @default(cuid())
+  type             String
+  payload          Json
+  status           EventStatus       @default(PENDING)
+  endpointId       String            @map("endpoint_id")
+  endpoint         Endpoint          @relation(fields: [endpointId], references: [id])
+  createdAt        DateTime          @default(now()) @map("created_at")
+  deliveryAttempts DeliveryAttempt[]
+  deadLetterEvent  DeadLetterEvent?
+
+  @@map("events")
+}
+
+model DeliveryAttempt {
+  id            String   @id @default(cuid())
+  eventId       String   @map("event_id")
+  event         Event    @relation(fields: [eventId], references: [id])
+  statusCode    Int?     @map("status_code")
+  responseBody  String?  @map("response_body")
+  attemptNumber Int      @map("attempt_number")
+  success       Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("delivery_attempts")
+}
+
+model DeadLetterEvent {
+  id         String   @id @default(cuid())
+  eventId    String   @unique @map("event_id")
+  event      Event    @relation(fields: [eventId], references: [id])
+  endpointId String   @map("endpoint_id")
+  endpoint   Endpoint @relation(fields: [endpointId], references: [id])
+  payload    Json
+  reason     String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("dead_letter_events")
+}
