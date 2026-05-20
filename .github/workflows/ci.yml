@@ -38,4 +38,8 @@ jobs:
           node-version: "20"
           cache: pnpm
       - run: pnpm install --no-frozen-lockfile
+      - run: pnpm prisma generate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
       - run: pnpm build
