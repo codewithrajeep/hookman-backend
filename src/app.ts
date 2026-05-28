@@ -3,6 +3,7 @@ import helmet from "helmet";
 import cors from "cors";
 import { AppError } from "@/errors/AppError";
 import logger from "@/utils/logger";
+import authRoutes from "@/modules/auth/auth.routes";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
 });
+app.use("/api/v1/auth", authRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ status: "error", message: "Route not found" });
