@@ -21,7 +21,7 @@ export const authenticate = async (
     const payload = jwt.verify(token, env.JWT_SECRET) as { userId: string };
     const user = await authRepository.findById(payload.userId);
     if (!user) throw new UnauthorizedError("User not found.");
-    const { password, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
     req.user = safeUser;
     next();
   } catch (err) {
