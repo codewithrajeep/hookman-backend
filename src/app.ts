@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import helmet from "helmet";
 import cors from "cors";
 import { AppError } from "@/errors/AppError";
@@ -20,7 +20,7 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ status: "error", message: "Route not found" });
 });
 
-app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: "error",
