@@ -38,7 +38,7 @@ export const apiKeyController = {
       if (!userId) throw new UnauthorizedError("User not authenticated.");
       const { id } = req.params as { id: string };
       if (!id) throw new UnauthorizedError("API key ID is required.");
-      const result = await apiKeyService.delete(id, userId);
+      await apiKeyService.delete(id, userId);
       return res.status(200).json({
         success: true,
         message: "API key deleted successfully",
