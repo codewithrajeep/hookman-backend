@@ -13,7 +13,7 @@ export const authService = {
       ...data,
       password: hashedPassword,
     });
-    const { password, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
     return { user: safeUser };
   },
   login: async (data: { email: string; password: string }) => {
@@ -24,7 +24,7 @@ export const authService = {
     const token = jwt.sign({ id: user.id }, env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    const { password, ...safeUser } = user;
+    const { password: _password, ...safeUser } = user;
     return { user: safeUser, token };
   },
 };
