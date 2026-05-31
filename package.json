@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --transpile-only --ignore-watch node_modules --respawn src/server.ts",
     "start": "node dist/server.js",
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "prisma:generate": "prisma generate",
@@ -30,6 +30,7 @@
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.3",
     "pino": "^9.7.0",
+    "prisma": "^7.8.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "eslint": "^10.4.0",
     "prisma": "^7.8.0",
     "ts-node-dev": "^2.0.0",
+    "tsc-alias": "^1.8.17",
     "typescript": "^6.0.3"
   }
 }
