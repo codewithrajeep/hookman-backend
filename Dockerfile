@@ -32,4 +32,4 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
-CMD ["sh", "-c", "pnpm prisma migrate deploy --url $DATABASE_URL && node dist/server.js"]
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/server.js"]
