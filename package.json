@@ -9,7 +9,7 @@
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
-    "prisma:generate": "prisma generate",
+    "prisma:generate": "node --env-file=.env node_modules/prisma/build/index.js generate",
     "prisma:migrate": "prisma migrate dev --name",
     "prisma:seed": "prisma db seed",
     "prisma:reset": "prisma migrate reset --force",
