@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20-alpine3.20 AS builder
 
 WORKDIR /app
 
@@ -17,14 +17,14 @@ ENV DIRECT_URL=${DIRECT_URL}
 RUN pnpm prisma generate
 RUN pnpm build
 
-FROM node:20-alpine AS runner
+FROM node:20-alpine3.20 AS runner
 
 WORKDIR /app
 
 RUN npm install -g pnpm
 
 COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
+RUN pnpm install --frozen-lockfile
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/src/generated ./dist/generated
