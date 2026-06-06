@@ -2,7 +2,8 @@ FROM node:20-alpine3.20 AS builder
 
 WORKDIR /app
 
-RUN npm install -g pnpm
+RUN apk upgrade --no-cache
+RUN npm install -g pnpm@latest
 
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
