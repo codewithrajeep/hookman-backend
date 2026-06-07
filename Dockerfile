@@ -26,10 +26,17 @@ RUN npm install -g pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
+COPY prisma ./prisma
+COPY prisma.config.ts ./prisma.config.ts
+
+ARG DATABASE_URL
+ARG DIRECT_URL
+ENV DATABASE_URL=${DATABASE_URL}
+ENV DIRECT_URL=${DIRECT_URL}
+
+RUN pnpm prisma generate
+
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/generated ./dist/generated
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
 EXPOSE 3000
 CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/server.js"]
