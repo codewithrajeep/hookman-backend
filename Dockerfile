@@ -20,5 +20,6 @@ RUN mkdir -p dist/generated/prisma && \
     mkdir -p dist/generated/prisma/node_modules/@prisma && \
     ln -s /app/node_modules/.pnpm/@prisma+client-runtime-utils@7.8.0/node_modules/@prisma/client-runtime-utils \
     dist/generated/prisma/node_modules/@prisma/client-runtime-utils
+
 EXPOSE 3000
 CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/server.js"]
