@@ -20,7 +20,8 @@ export const UpdateEndpointSchema = z.object({
   url: z
     .string()
     .url("Invalid URL format")
-    .startsWith("https://", "URL must use HTTPS"),
+    .startsWith("https://", "URL must use HTTPS")
+    .optional(),
   isActive: z.boolean().optional(),
 });
 
