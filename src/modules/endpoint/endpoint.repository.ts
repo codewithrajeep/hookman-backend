@@ -7,6 +7,11 @@ export const EndpointRepository = {
       data,
     });
   },
+  findByUrlandUserId: async (url: string, userId: string) => {
+    return await prisma.endpoint.findFirst({
+      where: { url, userId },
+    });
+  },
   findAllByUserId: async (userId: string) => {
     return await prisma.endpoint.findMany({
       where: { userId },
