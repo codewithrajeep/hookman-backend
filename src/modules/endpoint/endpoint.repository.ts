@@ -1,7 +1,7 @@
 import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 
-export const EndpointRepository = {
+export const endpointRepository = {
   create: async (data: Prisma.EndpointCreateInput) => {
     return await prisma.endpoint.create({
       data,
