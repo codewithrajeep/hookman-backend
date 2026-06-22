@@ -71,7 +71,7 @@ This project is being built in phases. Each phase ships a working increment.
 |-------|-------------|--------|
 | Phase 1 | Foundation — Prisma schema, Redis, Express, Docker, CI/CD | ✅ Complete |
 | Phase 2 | Auth + API Keys — JWT, API key generation, auth middleware | ✅ Complete  |
-| Phase 3 | Endpoints + Events — CRUD, event ingestion, BullMQ enqueue | ⬜ Planned |
+| Phase 3 | Endpoints + Events — CRUD, event ingestion, BullMQ enqueue | ⬜ In Progress |
 | Phase 4 | Delivery + Retry + DLQ — Worker, exponential backoff, dead letter queue | ⬜ Planned |
 | Phase 5 | WebSocket + Dashboard — Live feed, Next.js frontend | ⬜ Planned |
 | Phase 6 | CI/CD + Production — Full deploy, monitoring, docs | ⬜ Planned |
