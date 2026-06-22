@@ -5,6 +5,7 @@ import { AppError } from "@/errors/AppError";
 import logger from "@/utils/logger";
 import authRoutes from "@/modules/auth/auth.routes";
 import apiKeyRoutes from "@/modules/api-key/api-key.routes";
+import endpointRoutes from "@/modules/endpoint/endpoint.routes"
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/api-keys", apiKeyRoutes);
+app.use("/api/v1/endpoints", endpointRoutes)
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ status: "error", message: "Route not found" });
