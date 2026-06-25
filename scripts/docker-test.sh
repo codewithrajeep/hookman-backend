@@ -38,7 +38,7 @@ docker build \
 echo "✅ Build successful"
 
 # Run container in detached mode
-echo "🚀 Starting container..."
+echo "Starting container..."
 CONTAINER_ID=$(docker run -d --rm -p 3000:3000 \
   --name hookman-test \
   -e DATABASE_URL="$DATABASE_URL" \
