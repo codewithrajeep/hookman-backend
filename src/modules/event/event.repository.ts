@@ -1,4 +1,4 @@
-import { Prisma } from "@/generated/prisma"
+import { EventStatus, Prisma } from "@/generated/prisma"
 import prisma from "@/lib/prisma"
 
 export const eventRepository = {
@@ -7,7 +7,7 @@ export const eventRepository = {
       data,
     })
   },
-  findAll: async (endpointId: string) => {
+  findAllByEndpointId: async (endpointId: string) => {
     return await prisma.event.findMany({
       where: {
         endpointId,
@@ -21,7 +21,7 @@ export const eventRepository = {
       },
     })
   },
-  updateStatus: async (id: string, status: "PENDING" | "DELIVERING" | "DELIVERED" | "FAILED") => {
+  updateStatus: async (id: string, status: EventStatus) => {
     return await prisma.event.update({
       where: {
         id,
@@ -31,5 +31,16 @@ export const eventRepository = {
       },
     })
   },
-  // Todo: find event by user (for dashboard listing)
+  findAllByUserId: async (userId: string) => {
+    return await prisma.event.findMany({
+      where: {
+        endpoint: {
+          userId
+        }
+      },
+      include: {
+        endpoint: true
+      }
+    })
+  }
 }
