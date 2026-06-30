@@ -4,7 +4,7 @@
   "description": "Hookman",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules --respawn src/server.ts",
+    "dev": "ts-node-dev --transpile-only --ignore-watch node_modules --require tsconfig-paths/register --require dotenv/config --respawn src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
     "typecheck": "tsc --noEmit",
@@ -41,9 +41,11 @@
     "@types/node": "^25.7.0",
     "@typescript-eslint/eslint-plugin": "^8.60.0",
     "@typescript-eslint/parser": "^8.60.0",
+    "dotenv": "^17.4.2",
     "eslint": "^10.4.0",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.8.17",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3"
   }
 }
