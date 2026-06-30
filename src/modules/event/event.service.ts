@@ -2,6 +2,7 @@ import { AppError, NotFoundError } from "@/errors";
 import { endpointRepository } from "../endpoint/endpoint.repository";
 import { CreateEventInput } from "./event.schema";
 import { eventRepository } from "./event.repository";
+import { webhookQueue } from "@/queues";
 
 export const eventService = {
   create: async (data: CreateEventInput) => {
@@ -21,7 +22,13 @@ export const eventService = {
         }
       }
     });
-    // TODO: enqueue for delivery
+    await webhookQueue.add("deliver", {
+      eventId: event.id,
+      endpointId: data.endpointId,
+      url: endpoint.url,
+      secret: endpoint.secret,
+      payload: data.payload
+    })
     return event;
   },
   listByEndpoint: async (endpointId: string) => {
