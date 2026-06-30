@@ -1,4 +1,4 @@
-import { AppError } from "@/errors/AppError";
+import { AppError } from "@/errors";
 import { authRepository } from "./auth.repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
