@@ -1,11 +1,12 @@
 import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import cors from "cors";
-import { AppError } from "@/errors/AppError";
+import { AppError } from "@/errors";
 import logger from "@/utils/logger";
 import authRoutes from "@/modules/auth/auth.routes";
 import apiKeyRoutes from "@/modules/api-key/api-key.routes";
-import endpointRoutes from "@/modules/endpoint/endpoint.routes"
+import endpointRoutes from "@/modules/endpoint/endpoint.routes";
+import eventRoutes from "@/modules/event/event.routes";
 
 const app = express();
 
@@ -18,7 +19,8 @@ app.get("/health", (_req: Request, res: Response) => {
 });
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/api-keys", apiKeyRoutes);
-app.use("/api/v1/endpoints", endpointRoutes)
+app.use("/api/v1/endpoints", endpointRoutes);
+app.use("/api/v1/events", eventRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ status: "error", message: "Route not found" });
