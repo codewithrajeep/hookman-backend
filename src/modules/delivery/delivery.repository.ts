@@ -33,6 +33,29 @@ export const deliveryRepository = {
       }
     })
   },
+  findAttemptsByEventId: async (eventId: string) => {
+    return prisma.deliveryAttempt.findMany({
+      where: { eventId },
+      orderBy: { attemptNumber: "asc" }
+    })
+  },
+  findDeadLettersByUserId: async (userId: string) => {
+    return prisma.deadLetterEvent.findMany({
+      where: {
+        endpoint: {
+          userId
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    })
+  },
+  findDeadLetterByEventId: async (eventId: string) => {
+    return prisma.deadLetterEvent.findUnique({
+      where: { eventId }
+    })
+  },
   updateEventStatus: async (
     eventId: string,
     status: "DELIVERED" | "FAILED"
