@@ -1,3 +1,4 @@
+import { Prisma } from "@/generated/prisma";
 import prisma from "@/lib/prisma";
 
 export const deliveryRepository = {
@@ -21,7 +22,7 @@ export const deliveryRepository = {
   createDeadLetterEvent: async (data: {
     eventId: string;
     endpointId: string;
-    payload: Record<string, string>;
+    payload: Prisma.InputJsonValue;
     reason: string;
   }) => {
     return await prisma.deadLetterEvent.create({
