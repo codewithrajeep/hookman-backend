@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { NotFoundError } from "@/errors";
 import { DeliveryJobData } from "./delivery.schema";
 import { deliveryRepository } from "./delivery.repository";
+import { Prisma } from "@/generated/prisma";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -12,7 +13,7 @@ const NON_RETRYABLE_STATUS_CODES = [400, 401, 403, 404, 410];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const signPayload = (payload: Record<string, unknown>, secret: string): string => {
+const signPayload = (payload: Prisma.InputJsonValue, secret: string): string => {
   const body = JSON.stringify(payload);
   return crypto.createHmac("sha256", secret).update(body).digest("hex");
 };
