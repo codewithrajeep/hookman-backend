@@ -7,6 +7,7 @@ import authRoutes from "@/modules/auth/auth.routes";
 import apiKeyRoutes from "@/modules/api-key/api-key.routes";
 import endpointRoutes from "@/modules/endpoint/endpoint.routes";
 import eventRoutes from "@/modules/event/event.routes";
+import deliveryRoutes from "@/modules/delivery/delivery.routes";
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/api-keys", apiKeyRoutes);
 app.use("/api/v1/endpoints", endpointRoutes);
 app.use("/api/v1/events", eventRoutes);
+app.use("/api/v1/delivery", deliveryRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ status: "error", message: "Route not found" });
