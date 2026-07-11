@@ -2,7 +2,7 @@ import { AppError, NotFoundError } from "@/errors";
 import { endpointRepository } from "../endpoint/endpoint.repository";
 import { CreateEventInput } from "./event.schema";
 import { eventRepository } from "./event.repository";
-import { webhookQueue } from "@/queues";
+import { addWebhookJob } from "@/queues/producers/webhook.queue";
 
 export const eventService = {
   create: async (data: CreateEventInput) => {
@@ -22,13 +22,13 @@ export const eventService = {
         }
       }
     });
-    await webhookQueue.add("deliver", {
+    await addWebhookJob({
       eventId: event.id,
-      endpointId: data.endpointId,
+      endpointId: event.endpointId,
       url: endpoint.url,
       secret: endpoint.secret,
-      payload: data.payload
-    })
+      payload: event.payload as Record<string, unknown>,
+    });
     return event;
   },
   listByEndpoint: async (endpointId: string) => {
