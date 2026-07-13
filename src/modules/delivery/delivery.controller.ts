@@ -51,5 +51,21 @@ export const deliveryController = {
     } catch (err) {
       next(err);
     }
+  },
+  // replay a dead letter event
+  replayDeadLetter: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) throw new UnauthorizedError("User not authenticated");
+      const { eventId } = req.params;
+      if (!eventId) throw new NotFoundError("Event not found");
+      await deliveryService.replayEvent(eventId as string, userId)
+      return res.status(200).json({
+        success: true,
+        message: "Event replay queued successfully",
+      })
+    } catch (err) {
+      next(err);
+    }
   }
 }
