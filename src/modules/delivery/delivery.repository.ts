@@ -59,11 +59,26 @@ export const deliveryRepository = {
   },
   updateEventStatus: async (
     eventId: string,
-    status: "DELIVERED" | "FAILED"
+    status: "PENDING" | "DELIVERED" | "FAILED"
   ) => {
     return await prisma.event.update({
       where: { id: eventId },
       data: { status }
+    })
+  },
+  // fetch dead letter with endpoint data needed to get url + secret for re-enqueue
+  findDeadLetterWithEndpoint: async (eventId: string) => {
+    return prisma.deadLetterEvent.findUnique({
+      where: { eventId },
+      include: {
+        endpoint: true, // need url, secret, userId for replay
+      }
+    })
+  },
+  // delete the dead letter row called when replay is triggered
+  deleteDeadLetterEvent: async (eventId: string) => {
+    return prisma.deadLetterEvent.delete({
+      where: { eventId }
     })
   }
 }
