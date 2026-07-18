@@ -10,7 +10,7 @@ export const initSocket = (httpServer: HttpServer): Server => {
       methods: ["GET", "POST"],
     }
   });
-  io.on("connection", (socket) => {
+  io.on("connection", (socket: import("socket.io").Socket) => {
     logger.info({ socketId: socket.id }, "Client connected.");
     // client sends their userId to join their own room
     // only events for that userId wil be pushed to them
