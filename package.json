@@ -31,6 +31,7 @@
     "jsonwebtoken": "^9.0.3",
     "pino": "^9.7.0",
     "prisma": "^7.8.0",
+    "socket.io": "^4.8.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
