@@ -10,13 +10,11 @@ import { getIO } from "@/lib/socket";
 const MAX_ATTEMPTS = 5;
 // 408 (timeout) and 429 (rate limit) are intentionally excluded — they ARE retryable
 const NON_RETRYABLE_STATUS_CODES = [400, 401, 403, 404, 410];
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 const signPayload = (payload: Prisma.InputJsonValue, secret: string): string => {
   const body = JSON.stringify(payload);
   return crypto.createHmac("sha256", secret).update(body).digest("hex");
 };
-
 const isRetryable = (statusCode: number | null): boolean => {
   if (statusCode === null) return true;
   return !NON_RETRYABLE_STATUS_CODES.includes(statusCode);
