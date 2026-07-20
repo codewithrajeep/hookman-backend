@@ -4,6 +4,7 @@ import { DeliveryJobData } from "./delivery.schema";
 import { deliveryRepository } from "./delivery.repository";
 import { Prisma } from "@/generated/prisma";
 import { addWebhookJob } from "@/queues/producers/webhook.queue";
+import { getIO } from "@/lib/socket";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const MAX_ATTEMPTS = 5;
@@ -18,11 +19,21 @@ const isRetryable = (statusCode: number | null): boolean => {
   if (statusCode === null) return true;
   return !NON_RETRYABLE_STATUS_CODES.includes(statusCode);
 };
+
+// Emits socket event to the user's room — non-fatal if socket not initialized
+const emitToUser = (userId: string, event: string, data: unknown) => {
+  try {
+    getIO().to(userId).emit(event, data);
+  } catch (_) {
+    // socket not initialized yet — skip silently, don't crash delivery
+  }
+};
+
 // ─── Service ──────────────────────────────────────────────────────────────────
 export const deliveryService = {
   // Called by webhook.worker.ts on every job execution including retries
   processWebhookDelivery: async (data: DeliveryJobData, attemptsMade: number) => {
-    const { eventId, endpointId, url, secret, payload } = data;
+    const { eventId, endpointId, userId, url, secret, payload } = data;
     const attemptNumber = attemptsMade + 1;
     let statusCode: number | null = null;
     let responseBody: string | null = null;
@@ -58,6 +69,12 @@ export const deliveryService = {
     // ── Step 3: Success path ────────────────────────────────────────────────
     if (success) {
       await deliveryRepository.updateEventStatus(eventId, "DELIVERED");
+      emitToUser(userId, "delivery:success", {
+        eventId,
+        endpointId,
+        attemptNumber,
+        statusCode,
+      });
       return;
     }
     // ── Step 4: Permanent failure path ──────────────────────────────────────
@@ -67,6 +84,13 @@ export const deliveryService = {
       const reason = !retryable ? "NON_RETRYABLE_STATUS" : "MAX_ATTEMPTS_EXHAUSTED";
       await deliveryRepository.createDeadLetterEvent({ eventId, endpointId, payload, reason });
       await deliveryRepository.updateEventStatus(eventId, "FAILED");
+      emitToUser(userId, "delivery:failed", {
+        eventId,
+        endpointId,
+        attemptNumber,
+        statusCode,
+        reason,
+      });
       return;
     }
     // ── Step 5: Retryable — throw to trigger BullMQ retry ───────────────────
@@ -87,22 +111,18 @@ export const deliveryService = {
     return result;
   },
   replayEvent: async (eventId: string, userId: string) => {
-    // find dead letter with endpoint need url, secret, ownership check
     const deadLetter = await deliveryRepository.findDeadLetterWithEndpoint(eventId);
-    if (!deadLetter) throw new NotFoundError("Dead letter event not found")
-    // verify the endpointId belongs to the requesting userId
+    if (!deadLetter) throw new NotFoundError("Dead letter event not found");
     if (deadLetter.endpoint.userId !== userId) throw new NotFoundError("Dead letter event not found");
-    // delete the dead letter row, event is getting a fresh start
     await deliveryRepository.deleteDeadLetterEvent(eventId);
-    // reset event status back to pending
     await deliveryRepository.updateEventStatus(eventId, "PENDING");
-    // re-enquee the job, worker pick it up with fresh attempts
     await addWebhookJob({
       eventId,
       endpointId: deadLetter.endpoint.id,
+      userId: deadLetter.endpoint.userId, // carry userId for socket emit on retry
       url: deadLetter.endpoint.url,
       secret: deadLetter.endpoint.secret,
       payload: deadLetter.payload as Record<string, unknown>,
-    })
-  }
+    });
+  },
 };

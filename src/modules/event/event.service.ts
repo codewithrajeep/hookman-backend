@@ -25,6 +25,7 @@ export const eventService = {
     await addWebhookJob({
       eventId: event.id,
       endpointId: event.endpointId,
+      userId: endpoint.userId,
       url: endpoint.url,
       secret: endpoint.secret,
       payload: event.payload as Record<string, unknown>,

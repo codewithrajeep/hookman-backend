@@ -3,6 +3,7 @@ import { webhookQueue } from "../index";
 interface WebhookJobData {
   eventId: string;
   endpointId: string;
+  userId: string;
   url: string;
   secret: string;
   payload: Record<string, unknown>;

@@ -26,7 +26,7 @@ export const initSocket = (httpServer: HttpServer): Server => {
 };
 
 // called by delivery.service.ts to emit events safe to call after initSocket
-export const getId = (): Server => {
+export const getIO = (): Server => {
   if (!io) throw new Error("Socket.io not initialized");
   return io;
 }
