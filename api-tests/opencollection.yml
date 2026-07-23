@@ -1,0 +1,28 @@
+opencollection: 1.0.0
+
+info:
+  name: hookman-backend
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  scripts:
+    - type: after-response
+      code: |-
+        const token = res.getBody().data.token;
+        bru.setEnvVar("token", token)
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
