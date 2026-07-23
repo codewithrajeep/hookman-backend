@@ -1,0 +1,12 @@
+name: production
+variables:
+  - name: baseUrl
+    value: http://hookman-backend.onrender.com
+  - name: token
+    value: ""
+  - name: apiKey
+    value: ""
+  - name: endpointId
+    value: ""
+  - name: eventId
+    value: "
