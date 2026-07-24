@@ -3,7 +3,7 @@ variables:
   - name: baseUrl
     value: http://localhost:3000
   - name: token
-    value: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnhwZTNhajAwMDAwMWRibmRxYmFrd3IiLCJpYXQiOjE3ODQ4ODcwMzIsImV4cCI6MTc4NTQ5MTgzMn0.xA_HSmwMAUxvPc8JdTGL_ERdBsAkaa4D7R-SIr89em0
   - name: apiKey
     value: ""
   - name: endpointId

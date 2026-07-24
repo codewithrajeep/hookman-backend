@@ -9,9 +9,34 @@ import endpointRoutes from "@/modules/endpoint/endpoint.routes";
 import eventRoutes from "@/modules/event/event.routes";
 import deliveryRoutes from "@/modules/delivery/delivery.routes";
 import statsRoutes from "@/modules/stats/stats.routes";
+import pinoHttp from "pino-http";
 
 const app = express();
-
+app.use(
+  pinoHttp({
+    customLogLevel: (_req, res) => {
+      if (res.statusCode >= 500) return "error";
+      if (res.statusCode >= 400) return "warn";
+      return "info";
+    },
+    serializers: {
+      req(req) {
+        return {
+          method: req.method,
+          url: req.url,
+          ip: req.headers["x-forwarded-for"] ?? req.socket?.remoteAddress ?? "unknown",
+          userAgent: req.headers["user-agent"],
+          time: new Date().toLocaleTimeString(),
+        };
+      },
+      res(res) {
+        return {
+          statusCode: res.statusCode,
+        };
+      },
+    },
+  })
+);
 app.use(helmet());
 app.use(cors());
 app.use(express.json());

@@ -3,10 +3,10 @@ variables:
   - name: baseUrl
     value: http://hookman-backend.onrender.com
   - name: token
-    value: ""
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtcnhwZTNhajAwMDAwMWRibmRxYmFrd3IiLCJpYXQiOjE3ODQ4ODcyMjksImV4cCI6MTc4NTQ5MjAyOX0.RBUtuDyF4k_DuTo6lv7Ni9lh8242lYYypvgicWHeCOo
   - name: apiKey
     value: ""
   - name: endpointId
     value: ""
   - name: eventId
-    value: "
+    value: ""
