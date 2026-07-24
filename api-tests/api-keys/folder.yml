@@ -1,0 +1,14 @@
+info:
+  name: api-keys
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        if (body && body.data && body.data.rawKey) {
+          bru.setEnvVar("apiKey", body.data.rawKey);
+        }
