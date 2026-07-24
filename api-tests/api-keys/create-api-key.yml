@@ -1,0 +1,23 @@
+info:
+  name: create-api-key
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/api-keys"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "test-key"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
