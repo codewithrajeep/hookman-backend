@@ -18,8 +18,8 @@ export const authenticate = async (
     }
     const token = authHeader.split(" ")[1];
     if (!token) throw new UnauthorizedError("Invalid token.");
-    const payload = jwt.verify(token, env.JWT_SECRET) as { userId: string };
-    const user = await authRepository.findById(payload.userId);
+    const payload = jwt.verify(token, env.JWT_SECRET) as { id: string };
+    const user = await authRepository.findById(payload.id);
     if (!user) throw new UnauthorizedError("User not found.");
     const { password: _password, ...safeUser } = user;
     req.user = safeUser;
