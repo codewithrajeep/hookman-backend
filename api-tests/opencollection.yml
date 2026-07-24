@@ -20,7 +20,7 @@ request:
       code: |-
         const body = res.getBody();
         if (body && body.data && body.data.token) {
-         bru.setEnvVar("token", body.data.token)
+          bru.setEnvVar("token", body.data.token)
         }
 bundled: false
 extensions:
