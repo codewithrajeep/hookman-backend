@@ -1,0 +1,23 @@
+info:
+  name: update-endpoint
+  type: http
+  seq: 4
+
+http:
+  method: PATCH
+  url: "{{baseUrl}}/api/v1/endpoints/{{endpointId}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "updated-endpoint"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

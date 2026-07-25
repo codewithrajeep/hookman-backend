@@ -1,0 +1,31 @@
+info:
+  name: create-endpoint
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/v1/endpoints"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "test-endpoint",
+        "url": "<webhook-url>"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const id = res.getBody().data.id;
+        bru.setEnvVar("endpointId", id);
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
