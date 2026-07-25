@@ -3,3 +3,6 @@ node_modules/
 dist/
 /src/generated/prisma
 gitflow.md
+# Bruno environment values — keep templates only
+api-tests/environments/local.yml
+api-tests/environments/production.yml
