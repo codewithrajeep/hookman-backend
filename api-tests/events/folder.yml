@@ -1,0 +1,14 @@
+info:
+  name: events
+  type: folder
+  seq: 4
+
+request:
+  auth: inherit
+  scripts:
+    - type: after-response
+      code: |-
+        const body = res.getBody();
+        if (body && body.data && body.data.id) {
+          bru.setEnvVar("eventId", body.data.id);
+        }
