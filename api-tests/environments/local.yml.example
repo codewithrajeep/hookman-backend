@@ -1,0 +1,12 @@
+name: local
+variables:
+  - name: baseUrl
+    value: http://localhost:3000
+  - name: token
+    value: ""
+  - name: apiKey
+    value: ""
+  - name: endpointId
+    value: ""
+  - name: eventId
+    value: ""
