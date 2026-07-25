@@ -16,7 +16,7 @@ http:
         "type": "user.created",
         "payload": {
           "userId": "123",
-          "email": "test@test.com"
+          "email": "production@test.com"
         },
         "endpointId": "{{endpointId}}"
       }
