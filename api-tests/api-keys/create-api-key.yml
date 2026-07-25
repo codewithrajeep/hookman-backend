@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "name": "test-key"
+        "name": "local-key"
       }
   auth:
     type: bearer

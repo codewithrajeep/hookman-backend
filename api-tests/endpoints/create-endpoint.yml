@@ -10,7 +10,7 @@ http:
     type: json
     data: |-
       {
-        "name": "test-endpoint",
+        "name": "local-endpoint",
         "url": "<webhook-url>"
       }
   auth:
