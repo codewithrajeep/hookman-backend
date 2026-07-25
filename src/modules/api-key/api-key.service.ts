@@ -15,7 +15,7 @@ export const apiKeyService = {
       name: input.name,
       userId,
     });
-    return { rawKey, prefix, name: input.name };
+    return { rawKey: fullKey, prefix, name: input.name };
   },
   listByUser: async (userId: string) => {
     return apiKeyRepository.findAllByUserId(userId);
