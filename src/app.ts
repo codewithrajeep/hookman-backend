@@ -24,7 +24,10 @@ app.use(
         return {
           method: req.method,
           url: req.url,
-          ip: req.headers["x-forwarded-for"] ?? req.socket?.remoteAddress ?? "unknown",
+          ip:
+            req.headers["x-forwarded-for"] ??
+            req.socket?.remoteAddress ??
+            "unknown",
           userAgent: req.headers["user-agent"],
           time: new Date().toLocaleTimeString(),
         };
@@ -35,10 +38,37 @@ app.use(
         };
       },
     },
-  })
+  }),
 );
 app.use(helmet());
-app.use(cors());
+const frontendUrl = process.env.FRONTEND_URL;
+const allowedOrigins = [
+  "http://localhost:3000",
+  ...(frontendUrl ? [frontendUrl] : []),
+];
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "X-Requested-With",
+      "Accept",
+      "Origin",
+      "Access-Control-Allow-Origin",
+    ],
+  }),
+);
 app.use(express.json());
 
 app.get("/health", (_req: Request, res: Response) => {
