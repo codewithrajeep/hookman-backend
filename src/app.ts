@@ -10,6 +10,7 @@ import eventRoutes from "@/modules/event/event.routes";
 import deliveryRoutes from "@/modules/delivery/delivery.routes";
 import statsRoutes from "@/modules/stats/stats.routes";
 import pinoHttp from "pino-http";
+import { ZodError } from "zod";
 
 const app = express();
 app.use(
@@ -86,13 +87,18 @@ app.use((_req: Request, res: Response) => {
 });
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof ZodError) {
+    return res.status(400).json({
+      status: "error",
+      message: err.issues[0].message,
+    });
+  }
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: "error",
       message: err.message,
     });
   }
-
   logger.error({ err }, "Unhandled error");
   return res.status(500).json({
     status: "error",
