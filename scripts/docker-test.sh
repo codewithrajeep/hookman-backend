@@ -21,12 +21,49 @@ done
 
 echo "✅ All env vars loaded"
 
+# Function to find an available port (starting from 3000)
+find_available_port() {
+  local port=3000
+  local max_port=3010
+  while [ $port -le $max_port ]; do
+    if ! ss -lnt | grep -q ":$port " && ! lsof -i :$port >/dev/null 2>&1; then
+      echo $port
+      return 0
+    fi
+    port=$((port + 1))
+  done
+  echo "0"
+  return 1
+}
+
+# Clean up any existing container that might be using the port
+cleanup_docker_port() {
+  local port=$1
+  # Find any container (running or stopped) using this port
+  local container_id=$(docker ps -a --filter "publish=$port" -q)
+  if [ -n "$container_id" ]; then
+    echo "🧹 Removing existing container on port $port..."
+    docker rm -f $container_id 2>/dev/null || true
+  fi
+}
+
 # Stop and remove any existing containers on port 3000 or named hookman-test
 echo "🧹 Cleaning up existing containers..."
 docker stop hookman-test 2>/dev/null || true
 docker rm hookman-test 2>/dev/null || true
 docker stop $(docker ps -q --filter "publish=3000") 2>/dev/null || true
 docker rm $(docker ps -aq --filter "publish=3000") 2>/dev/null || true
+
+# Find an available port
+HOST_PORT=$(find_available_port)
+if [ "$HOST_PORT" -eq 0 ]; then
+  echo "❌ No available port found between 3000 and 3010"
+  exit 1
+fi
+
+if [ "$HOST_PORT" -ne 3000 ]; then
+  echo "⚠️  Port 3000 is busy, using port $HOST_PORT instead"
+fi
 
 # Build
 echo "🔨 Building Docker image..."
@@ -37,9 +74,9 @@ docker build \
 
 echo "✅ Build successful"
 
-# Run container in detached mode
-echo "Starting container..."
-CONTAINER_ID=$(docker run -d --rm -p 3000:3000 \
+# Run container in detached mode on the chosen host port
+echo "Starting container on port $HOST_PORT..."
+CONTAINER_ID=$(docker run -d --rm -p $HOST_PORT:3000 \
   --name hookman-test \
   -e DATABASE_URL="$DATABASE_URL" \
   -e DIRECT_URL="$DIRECT_URL" \
@@ -53,10 +90,22 @@ CONTAINER_ID=$(docker run -d --rm -p 3000:3000 \
 cleanup() {
   echo ""
   echo "🧹 Cleaning up..."
+  # Stop container
   docker stop hookman-test 2>/dev/null || true
   docker rm hookman-test 2>/dev/null || true
-  docker stop $(docker ps -q --filter "publish=3000") 2>/dev/null || true
-  docker rm $(docker ps -aq --filter "publish=3000") 2>/dev/null || true
+  docker stop $(docker ps -q --filter "publish=$HOST_PORT") 2>/dev/null || true
+  docker rm $(docker ps -aq --filter "publish=$HOST_PORT") 2>/dev/null || true
+
+  # Remove the built image
+  echo "   Removing Docker image..."
+  docker rmi hookman-backend 2>/dev/null || true
+
+  # Remove dangling images and unused build cache
+  echo "   Pruning unused Docker resources..."
+  docker image prune -f 2>/dev/null || true
+  docker builder prune -f 2>/dev/null || true
+  docker system prune -f 2>/dev/null || true
+
   echo "✅ Cleanup completed"
 }
 
@@ -90,21 +139,19 @@ docker logs "$CONTAINER_ID" 2>/dev/null || true
 
 # Test if server is responding with more patience
 echo ""
-echo "🧪 Testing server health..."
+echo "🧪 Testing server health on port $HOST_PORT..."
 SERVER_READY=false
 for i in {1..15}; do
   echo -ne "   Attempt $i/15...\r"
-  if curl -s -f http://localhost:3000/health > /dev/null 2>&1; then
+  if curl -s -f http://localhost:$HOST_PORT/health > /dev/null 2>&1; then
     echo "✅ Server health endpoint is responding"
-    curl -s http://localhost:3000/health
+    curl -s http://localhost:$HOST_PORT/health
     SERVER_READY=true
     break
-  elif curl -s -f http://localhost:3000 > /dev/null 2>&1; then
+  elif curl -s -f http://localhost:$HOST_PORT > /dev/null 2>&1; then
     echo "✅ Server root endpoint is responding"
     SERVER_READY=true
     break
-  elif curl -s http://localhost:3000 2>&1 | grep -q "Connection refused"; then
-    echo "   Server not yet accepting connections..."
   else
     echo "   Waiting for server to be ready..."
   fi
