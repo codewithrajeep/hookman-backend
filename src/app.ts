@@ -11,6 +11,7 @@ import deliveryRoutes from "@/modules/delivery/delivery.routes";
 import statsRoutes from "@/modules/stats/stats.routes";
 import pinoHttp from "pino-http";
 import { ZodError } from "zod";
+import cookieParser from "cookie-parser";
 
 const app = express();
 app.use(
@@ -71,6 +72,7 @@ app.use(
   }),
 );
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/health", (_req: Request, res: Response) => {
   res.status(200).json({ status: "ok" });
