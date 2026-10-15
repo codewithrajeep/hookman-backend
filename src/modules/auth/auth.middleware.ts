@@ -10,15 +10,24 @@ export const authenticate = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const authHeader = req.headers["authorization"];
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    // Prefer cookie-based auth (browser). Fall back to Bearer for
+    // programmatic access (curl, API keys, mobile)
+    let token = req.cookies?.token as string | undefined;
+    if (!token) {
+      const authHeader = req.headers["authorization"];
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+      }
+    }
+    if (!token) {
       throw new UnauthorizedError(
         "You're not authorized to access this resource.",
       );
     }
-    const token = authHeader.split(" ")[1];
-    if (!token) throw new UnauthorizedError("Invalid token.");
-    const payload = jwt.verify(token, env.JWT_SECRET) as { id: string };
+    const payload = jwt.verify(token, env.JWT_SECRET);
+    if (typeof payload === "string" || typeof payload.id !== "string") {
+      throw new UnauthorizedError("Invalid token.");
+    }
     const user = await authRepository.findById(payload.id);
     if (!user) throw new UnauthorizedError("User not found.");
     const { password: _password, ...safeUser } = user;
