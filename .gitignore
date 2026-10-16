@@ -6,3 +6,5 @@ gitflow.md
 # Bruno environment values — keep templates only
 api-tests/environments/local.yml
 api-tests/environments/production.yml
+# personal cookie testing file
+cookies.txt
