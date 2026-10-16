@@ -11,14 +11,14 @@ export const webhookWorker = new Worker(
     const data = DeliveryJobSchema.parse(job.data);
     logger.info(
       { jobId: job.id, eventId: data.eventId, attempt: job.attemptsMade + 1 },
-      "Processing webhook delivery"
+      "Processing webhook delivery",
     );
     await deliveryService.processWebhookDelivery(data, job.attemptsMade);
   },
   {
     connection,
     concurrency: 10,
-  }
+  },
 );
 
 // webhook lifecycle logs useful for debugging on Render
@@ -30,4 +30,7 @@ webhookWorker.on("failed", (job, err) => {
 });
 webhookWorker.on("error", (err) => {
   logger.error({ err }, "Webhook worker error");
-})
+});
+webhookWorker.on("ready", () => {
+  logger.info("Webhook worker is ready and connected to Redis");
+});
